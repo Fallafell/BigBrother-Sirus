@@ -1,0 +1,26 @@
+## Interface: 30300
+## Title: Big Brother
+## Notes: Checks Raid Buffs/Flasks/Consumables. Tunable alerts for misdirects, taunts, cc breakage, rez, dispel and interrupt
+## Notes-ruRU: Проверяет участников рейда на наличие настоев/эликсиров, а также оповещает о сбитии контроля и перенаправлении угрозы.
+## Author: Адаптация под Sirus - Фалафель
+## Version: 14
+## X-Category: Raid
+## X-Embeds: Ace2, RosterLib, FuBarPlugin-2.0
+## OptionalDeps: Ace2, RosterLib, FuBarPlugin-2.0, FuBar2Broker
+## SavedVariables: BigBrotherDB
+## LoadManagers: AddonLoader
+## X-LoadOn-Group: true
+## X-LoadOn-Slash: /bb, /bigbrother
+## X-LoadOn-LDB-Launcher: Interface\AddOns\BigBrother\icon
+## X-Curse-Packaged-Version: 13
+## X-Curse-Project-Name: BigBrother
+## X-Curse-Project-ID: big-brother
+## X-Curse-Repository-ID: wow/big-brother/mainline
+
+embeds.xml
+
+locale.lua
+
+SpellData.lua
+BigBrother.lua
+BuffWindow.lua

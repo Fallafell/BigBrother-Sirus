@@ -1,0 +1,18 @@
+﻿## Interface: 30000
+## LoadOnDemand: 1
+## X-Curse-Packaged-Version: r218
+## X-Curse-Project-Name: SpecialEventsEmbed
+## X-Curse-Project-ID: specialeventsembed
+## X-Curse-Repository-ID: wow/specialeventsembed/mainline
+
+## Author: Tekkub Stoutwrithe
+## Title: Lib: Special Events [|cffeda55fAura|r]
+## Notes: Some handy events that should exist in the default UI
+## X-Category: Library
+
+## X-AceLibrary-SpecialEvents-Aura-2.0: true
+
+## OptionalDeps: Ace2
+
+SpecialEvents-Aura-2.0.lua
+
