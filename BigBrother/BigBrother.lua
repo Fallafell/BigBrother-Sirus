@@ -88,15 +88,16 @@ addon:RegisterDefaults("profile", {
   GroupOnly = true,
   ReadyCheckMine = true,
   ReadyCheckOther = true,
-  ReadyCheckToSelf = true,  
+  ReadyCheckToSelf = false,  
   ReadyCheckToRaid = false,
   ReadyCheckBuffWinMine = false,
   ReadyCheckBuffWinOther = false,
   BuffWindowCombatClose = false,
   CheckFlasks = true,
-  CheckElixirs = false,
+  CheckElixirs = true,
   CheckFood = true,
   Taunt = false,
+  AoeTaunt = false,
   Dispel = false,
   Mana = false,
   Interrupt = false,
@@ -122,6 +123,27 @@ addon:RegisterDefaults("profile", {
   Hysteria = false,
   Divinehymn = false,
   Removed = false,
+  SacrificeRemoved = false,
+  ProtectionRemoved = false,
+  FreedomRemoved = false,
+  SalvaRemoved = false,
+  HysteriaRemoved = false,
+  PainsupressionRemoved = false,
+  Theimmutabilityofice = false,
+  AntiMagicCarapace = false,
+  Vampireblood = false,
+  Antimagiczone = false,
+  Indestructiblearmor = false,
+  Blinddefense = false,
+  Nostepback = false,
+  Shieldblock = false,
+  Negation = false,
+  Divineprotection = false,
+  Oakleather = false,
+  Survival = false,
+  Frenzy = false,
+  FangofSindragosa = false,
+  Symbioteworm = false,
 })
 
 -- ACE options menu
@@ -189,15 +211,7 @@ local options = {
       name = L["Events"],
       desc = L["Events"],
       type = 'group',
-      args = {   
-        grouponly = {
-          name  = L["Group Members Only"],
-          desc = L["Only reports events about players in my party/raid"],
-          type = 'toggle',
-          get = function() return addon.db.profile.GroupOnly end,
-          set = function(v) addon.db.profile.GroupOnly=v end,
-          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
-        },         
+      args = {     
         polymorph = {
           name  = L["Polymorph"],
           desc = L["Reports if and which player breaks crowd control effects (like polymorph, shackle undead, etc.) on enemies."],
@@ -221,7 +235,15 @@ local options = {
           get = function() return addon.db.profile.Taunt end,
           set = function(v) addon.db.profile.Taunt = v end,
           map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
-        },        
+        },
+       aoetaunt = {
+          name  = L["AoeTaunt"],
+          desc = L["Reports when players aoe-taunt mobs."],
+          type = 'toggle',
+          get = function() return addon.db.profile.AoeTaunt end,
+          set = function(v) addon.db.profile.AoeTaunt = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },                
         interrupt = {
           name  = L["Interrupt"],
           desc = L["Reports when players interrupt mob spell casts."],
@@ -238,14 +260,14 @@ local options = {
           set = function(v) addon.db.profile.Mana = v end,
           map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
         },	
---[[        stolen = {
+        stolen = {
           name  = L["Stolen"],
           desc = L["Reports when players steal mob buffs."],
           type = 'toggle',
           get = function() return addon.db.profile.Stolen end,
           set = function(v) addon.db.profile.Stolen = v end,
           map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }		  
-        },   ]]   				
+        },  				
         dispel = {
           name  = L["Dispel"],
           desc = L["Reports when players remove or steal mob buffs."],
@@ -279,19 +301,185 @@ local options = {
           map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
         }, 
        }, }, -- end events 
+     tank = {
+      name = L["Tank Events"],
+      desc = L["Tank Events"],
+      type = 'group',
+      args = {
+        theimmutabilityofice = {
+          name  = L["Theimmutabilityofice"],
+          desc = L["Reports when when the Sacrifice is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.Theimmutabilityofice end,
+          set = function(v) addon.db.profile.Theimmutabilityofice = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },
+        antimagiccarapace = {
+          name  = L["AntiMagicCarapace"],
+          desc = L["Reports when when the Sacrifice is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.AntiMagicCarapace end,
+          set = function(v) addon.db.profile.AntiMagicCarapace = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },	   
+        vampireblood = {
+          name  = L["Vampireblood"],
+          desc = L["Reports when when the Sacrifice is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.Vampireblood end,
+          set = function(v) addon.db.profile.Vampireblood = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },	   
+        antimagiczone = {
+          name  = L["Antimagiczone"],
+          desc = L["Reports when when the Sacrifice is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.Antimagiczone end,
+          set = function(v) addon.db.profile.Antimagiczone = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },	   
+        indestructiblearmor = {
+          name  = L["Indestructiblearmor"],
+          desc = L["Reports when when the Sacrifice is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.Indestructiblearmor end,
+          set = function(v) addon.db.profile.Indestructiblearmor = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },	   
+        blinddefense = {
+          name  = L["Blinddefense"],
+          desc = L["Reports when when the Sacrifice is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.Blinddefense end,
+          set = function(v) addon.db.profile.Blinddefense = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },	   
+        nostepback = {
+          name  = L["Nostepback"],
+          desc = L["Reports when when the Sacrifice is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.Nostepback end,
+          set = function(v) addon.db.profile.Nostepback = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },	   
+        shieldblock = {
+          name  = L["Shieldblock"],
+          desc = L["Reports when when the Sacrifice is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.Shieldblock end,
+          set = function(v) addon.db.profile.Shieldblock = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },	   
+        negation = {
+          name  = L["Negation"],
+          desc = L["Reports when when the Sacrifice is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.Negation end,
+          set = function(v) addon.db.profile.Negation = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },	   
+        divineprotection = {
+          name  = L["Divineprotection"],
+          desc = L["Reports when when the Sacrifice is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.Divineprotection end,
+          set = function(v) addon.db.profile.Divineprotection = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },	   
+        oakleather = {
+          name  = L["Oakleather"],
+          desc = L["Reports when when the Sacrifice is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.Oakleather end,
+          set = function(v) addon.db.profile.Oakleather = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },	   
+        survival = {
+          name  = L["Survival"],
+          desc = L["Reports when when the Sacrifice is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.Survival end,
+          set = function(v) addon.db.profile.Survival = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },	   
+        frenzy = {
+          name  = L["Frenzy"],
+          desc = L["Reports when when the Sacrifice is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.Frenzy end,
+          set = function(v) addon.db.profile.Frenzy = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },	   
+        fangofsindragosa = {
+          name  = L["FangofSindragosa"],
+          desc = L["Reports when when the Sacrifice is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.FangofSindragosa end,
+          set = function(v) addon.db.profile.FangofSindragosa = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },	   
+        symbioteworm = {
+          name  = L["Symbioteworm"],
+          desc = L["Reports when when the Sacrifice is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.Symbioteworm end,
+          set = function(v) addon.db.profile.Symbioteworm = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },	   		
+      }, }, -- end events  		  
      removed = {
       name = L["Removed Events"],
       desc = L["Removed Events"],
       type = 'group',
       args = {
-        removed = {
-          name  = L["Removed"],
-          desc = L["Reports when when the ability is decreasing."],
+        sacrificeremoved = {
+          name  = L["Hand of Sacrifice"],
+          desc = L["Reports when when the Sacrifice is decreasing."],
           type = 'toggle',
-          get = function() return addon.db.profile.Removed end,
-          set = function(v) addon.db.profile.Removed = v end,
+          get = function() return addon.db.profile.SacrificeRemoved end,
+          set = function(v) addon.db.profile.SacrificeRemoved = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },
+       protectionremoved = {
+          name  = L["Hand of Protection"],
+          desc = L["Reports when when the Protection is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.ProtectionRemoved end,
+          set = function(v) addon.db.profile.ProtectionRemoved = v end,
           map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
         }, 	  
+       freedomremoved = {
+          name  = L["Hand of freedom"],
+          desc = L["Reports when when the Freedom is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.FreedomRemoved end,
+          set = function(v) addon.db.profile.FreedomRemoved = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        }, 	  
+       salvaremoved = {
+          name  = L["Hand of salvation"],
+          desc = L["Reports when when the Salva is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.SalvaRemoved end,
+          set = function(v) addon.db.profile.SalvaRemoved = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        }, 	  
+       hysteriaremoved = {
+          name  = L["Hysteria"],
+          desc = L["Reports when when the Hysteria is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.HysteriaRemoved end,
+          set = function(v) addon.db.profile.HysteriaRemoved = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        }, 	  
+       painsupressionremoved = {
+          name  = L["Painsupression"],
+          desc = L["Reports when when the Painsupression is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.PainsupressionRemoved end,
+          set = function(v) addon.db.profile.PainsupressionRemoved = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        }, 	    		
       }, }, -- end events  	   
      extraevents = {
       name = L["Extra events"],
@@ -410,14 +598,6 @@ local options = {
           set = function(v) addon.db.profile.Soulgem = v end,
           map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }		  
         },
-      shackleseal = {
-          name  = L["Shackleseal"],
-          desc = L["Reports when a player is in the shackle seal."],
-          type = 'toggle',
-          get = function() return addon.db.profile.Shackleseal end,
-          set = function(v) addon.db.profile.Shackleseal = v end,
-          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }		  
-        },
       hysteria = {
           name  = L["Hysteria"],
           desc = L["Reports when a player is in the Hysteria."],
@@ -462,6 +642,14 @@ local options = {
           type = 'toggle',
           get = function() return addon.db.profile.Megoslack end,
           set = function(v) addon.db.profile.Megoslack = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }		  
+        },
+        shackleseal = {
+          name  = L["Shackleseal"],
+          desc = L["Reports when a player is in the shackle seal."],
+          type = 'toggle',
+          get = function() return addon.db.profile.Shackleseal end,
+          set = function(v) addon.db.profile.Shackleseal = v end,
           map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }		  
         },		
  	  }, }, -- end events
@@ -628,7 +816,15 @@ local options = {
           get = function() return addon.db.profile.BuffWindowCombatClose end,
           set = function(v) addon.db.profile.BuffWindowCombatClose = v end,
           map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
-        },      
+        }, 
+        grouponly = {
+          name  = L["Group Members Only"],
+          desc = L["Only reports events about players in my party/raid"],
+          type = 'toggle',
+          get = function() return addon.db.profile.GroupOnly end,
+          set = function(v) addon.db.profile.GroupOnly=v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+        },       		
         customchannel = {
           name  = L["Custom Channel"],
           desc = L["Name of custom channel to use for output"],
@@ -1248,6 +1444,7 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
   if self.db.profile.GroupOnly and 
      bit.band(srcflags, COMBATLOG_OBJECT_AFFILIATION_OUTSIDER) > 0 and
      bit.band(dstflags, COMBATLOG_OBJECT_AFFILIATION_OUTSIDER) > 0 and
+     bit.band(srcflags, COMBATLOG_OBJECT_AFFILIATION_RAID) > 0	and  
      not ccinfo.spellid[dstGUID] then
      -- print("skipped event from "..(srcname or "nil").." on "..(dstname or "nil"))
     return
@@ -1334,18 +1531,25 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 			self:Print(L["%s taunted %s with %s"]:format("|cff40ff40"..srcname.."|r", iconize(dstflags,false).."|cffff4040"..dstname.."|r", GetSpellLink(spellID)))
 		end
 		sendspam(L["%s taunted %s with %s"]:format(srcname, iconize(dstflags,true)..dstname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
-	elseif self.db.profile.Taunt and is_playersrc and not is_playerdst and subevent == "SPELL_AURA_APPLIED" and aoetauntSpellNames[spellname] then
+	elseif self.db.profile.AoeTaunt and is_playersrc and not is_playerdst and subevent == "SPELL_AURA_APPLIED" and aoetauntSpellNames[spellname] then
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s aoe-taunted %s with %s"]:format("|cff40ff40"..srcname.."|r", iconize(dstflags,false).."|cffff4040"..dstname.."|r", GetSpellLink(spellID)))
 		end	
 		sendspam(L["%s aoe-taunted %s with %s"]:format(srcname, iconize(dstflags,true)..dstname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
-	elseif self.db.profile.Taunt and is_playersrc and not is_playerdst and subevent == "SPELL_MISSED" and (tauntSpellNames[spellname] or aoetauntSpellNames[spellname]) 
+	elseif self.db.profile.Taunt and is_playersrc and not is_playerdst and subevent == "SPELL_MISSED" and tauntSpellNames[spellname] 
 	  and not (spellID == 49576 and extraspellID == "IMMUNE") then -- ignore immunity messages from death grip caused by mobs immune to the movement component
     local missType = extraspellID
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s taunt FAILED on %s (%s)"]:format("|cff40ff40"..srcname.."|r", iconize(dstflags,false).."|cffff4040"..dstname.."|r", missType))
 		end	
 		sendspam(L["%s taunt FAILED on %s (%s)"]:format(srcname, iconize(dstflags,true)..dstname, missType),addon.db.profile.PolyOut)
+	elseif self.db.profile.AoeTaunt and is_playersrc and not is_playerdst and subevent == "SPELL_MISSED" and aoetauntSpellNames[spellname]
+	  and not (spellID == 49576 and extraspellID == "IMMUNE") then -- ignore immunity messages from death grip caused by mobs immune to the movement component
+    local missType = extraspellID
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s taunt FAILED on %s (%s)"]:format("|cff40ff40"..srcname.."|r", iconize(dstflags,false).."|cffff4040"..dstname.."|r", missType))
+		end	
+		sendspam(L["%s taunt FAILED on %s (%s)"]:format(srcname, iconize(dstflags,true)..dstname, missType),addon.db.profile.PolyOut)		
 	elseif self.db.profile.Interrupt and is_playersrc and subevent == "SPELL_INTERRUPT" then
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s interrupted %s casting %s"]:format("|cff40ff40"..srcname.."|r", iconize(dstflags,false).."|cffff4040"..dstname.."|r", GetSpellLink(extraspellID)))
@@ -1356,11 +1560,11 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 		    self:Print(L["%s dispelled %s on %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(extraspellID), iconize(dstflags,false).."|cffff4040"..dstname.."|r"),addon.db.profile.PolyOut)
 		end
 	    sendspam(L["%s dispelled %s on %s"]:format(srcname, GetSpellLink(extraspellID), dstname),addon.db.profile.PolyOut)
---[[    elseif self.db.profile.Stolen and is_playersrc and is_hostiledst and subevent == "SPELL_STOLEN" then
+    elseif self.db.profile.Stolen and is_playersrc and is_hostiledst and subevent == "SPELL_STOLEN" then
 	    if self.db.profile.PolyOut[1] then
 		    self:Print(L["%s stole %s from %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(extraspellID), "|cffff4040"..dstname.."|r"),addon.db.profile.PolyOut)
 		end	
-	    sendspam(L["%s stole %s from %s"]:format(srcname, GetSpellLink(extraspellID), dstname),addon.db.profile.PolyOut) ]]
+	    sendspam(L["%s stole %s from %s"]:format(srcname, GetSpellLink(extraspellID), dstname),addon.db.profile.PolyOut)
 	elseif self.db.profile.Mana and is_playersrc and subevent == "SPELL_CAST_SUCCESS" and (spellID == 29166) then
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s on %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID), "|cffff4040"..dstname.."|r"))
@@ -1452,13 +1656,9 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 		end
 		sendspam(L["%s на %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)	
 	elseif self.db.profile.Arcanesign and is_playersrc and subevent == "SPELL_DAMAGE" and (spellID == 308472) then
-		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s sign damage %s on %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID), "|cffff4040"..dstname.."|r"))
-		end
 	elseif self.db.profile.Megoslack and is_playersrc and (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH") and (spellID == 300061) then
-		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s pokes the fish"]:format("|cff40ff40"..srcname.."|r"))
-		end
 	elseif self.db.profile.Hysteria and is_playersrc and subevent == "SPELL_CAST_SUCCESS" and (spellID == 49016) then
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s on %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID), "|cffff4040"..dstname.."|r"))
@@ -1468,16 +1668,207 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
-		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)		
-    elseif self.db.profile.Removed and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 1038 or spellID == 1044 or spellID == 10278) then
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+	elseif self.db.profile.Toyrailroad and is_playersrc and subevent == "SPELL_CREATE" and (spellID == 61031) then
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s set yyy %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s set yyy %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)			
+    elseif self.db.profile.SacrificeRemoved and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 6940) then
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s falls off %s"]:format(GetSpellLink(spellID), "|cff40ff40"..dstname.."|r"))
 		end		
-		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+    elseif self.db.profile.ProtectionRemoved and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 10278) then
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s falls off %s"]:format(GetSpellLink(spellID), "|cff40ff40"..dstname.."|r"))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+    elseif self.db.profile.FreedomRemoved and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 1044) then
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s falls off %s"]:format(GetSpellLink(spellID), "|cff40ff40"..dstname.."|r"))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+    elseif self.db.profile.SalvaRemoved and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 1038) then
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s falls off %s"]:format(GetSpellLink(spellID), "|cff40ff40"..dstname.."|r"))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+    elseif self.db.profile.HysteriaRemoved and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 49016) then
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s falls off %s"]:format(GetSpellLink(spellID), "|cff40ff40"..dstname.."|r"))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+    elseif self.db.profile.PainsupressionRemoved and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 33206) then
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s falls off %s"]:format(GetSpellLink(spellID), "|cff40ff40"..dstname.."|r"))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)	
  --[[   elseif self.db.profile.test and not is_playerdst and subevent == "SPELL_CAST_START" and (spellID == 308663) then
 		if self.db.profile.PolyOut[1] then
 			self:SetRaidTarget(srcname,8)
 		end		]]
+--дк
+	elseif self.db.profile.Theimmutabilityofice and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 48792) then --Незыблемость льда
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+
+	elseif self.db.profile.AntiMagicCarapace and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 48707) then --Антимагический панцирь
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut) 
+	elseif self.db.profile.Vampireblood and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 55233) then --Кровь вампира
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+	elseif self.db.profile.Antimagiczone and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 51052) then --Зона антимагии
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+	elseif self.db.profile.Indestructiblearmor and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 51271) then --Несокрушимая броня
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+--вар
+	elseif self.db.profile.Blinddefense and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 871) then --Глухая оборона
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+	elseif self.db.profile.Nostepback and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 12976) then --Ни шагу назад
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+	elseif self.db.profile.Shieldblock and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 2565) then --Блок щитом
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)	
+--пал
+	elseif self.db.profile.Negation and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 307919) then --Отрицание
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+	elseif self.db.profile.Divineprotection and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 498) then --Божественная защита
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+--дру
+	elseif self.db.profile.Oakleather and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 22812) then --Дубовая кожа
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+	elseif self.db.profile.Survival and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 61336) then --Инстинкт выживания
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+	elseif self.db.profile.Frenzy and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 308079) then --Исступление
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+--тринкеты
+	elseif self.db.profile.FangofSindragosa and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 71638) then --Безупречный клык Синдрагосы
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+	elseif self.db.profile.Symbioteworm and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 300133) then --Червь-симбионт
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+--дк
+	elseif self.db.profile.Theimmutabilityofice and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 48792) then --Незыблемость льда
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+	elseif self.db.profile.AntiMagicCarapace and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 48707) then --Антимагический панцирь
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+	elseif self.db.profile.Vampireblood and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 55233) then --Кровь вампира
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+	elseif self.db.profile.Antimagiczone and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 51052) then --Зона антимагии
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+	elseif self.db.profile.Indestructiblearmor and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 51271) then --Несокрушимая броня
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+--вар
+	elseif self.db.profile.Blinddefense and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 871) then --Глухая оборона
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+	elseif self.db.profile.Nostepback and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 12976) then --Ни шагу назад
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+	elseif self.db.profile.Shieldblock and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 2565) then --Блок щитом
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+--пал
+	elseif self.db.profile.Negation and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 307919) then --Отрицание
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+	elseif self.db.profile.Divineprotection and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 498) then --Божественная защита
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+--дру
+	elseif self.db.profile.Oakleather and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 22812) then --Дубовая кожа
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+	elseif self.db.profile.Survival and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 61336) then --Инстинкт выживания
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+	elseif self.db.profile.Frenzy and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 308079) then --Исступление
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+--тринкеты
+	elseif self.db.profile.FangofSindragosa and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 71638) then --Безупречный клык Синдрагосы
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+	elseif self.db.profile.Symbioteworm and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 300133) then --Червь-симбионт
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
   end
 end
 
