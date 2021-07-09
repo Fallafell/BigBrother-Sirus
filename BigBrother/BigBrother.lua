@@ -144,6 +144,8 @@ addon:RegisterDefaults("profile", {
   Frenzy = false,
   FangofSindragosa = false,
   Symbioteworm = false,
+  Guardianspirit = false,
+  GuardianspiritRemoved = false,
 })
 
 -- ACE options menu
@@ -479,7 +481,15 @@ local options = {
           get = function() return addon.db.profile.PainsupressionRemoved end,
           set = function(v) addon.db.profile.PainsupressionRemoved = v end,
           map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
-        }, 	    		
+        },
+       guardianspiritremoved = {
+          name  = L["Guardianspirit"],
+          desc = L["Reports when when the Guardians pirit is decreasing."],
+          type = 'toggle',
+          get = function() return addon.db.profile.GuardianspiritRemoved end,
+          set = function(v) addon.db.profile.GuardianspiritRemoved = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }		  
+        },			
       }, }, -- end events  	   
      extraevents = {
       name = L["Extra events"],
@@ -613,7 +623,15 @@ local options = {
           get = function() return addon.db.profile.Divinehymn end,
           set = function(v) addon.db.profile.Divinehymn = v end,
           map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }		  
-        },		
+        },
+      guardianspirit = {
+          name  = L["Guardianspirit"],
+          desc = L["Reports when a player is in the guardian spirit."],
+          type = 'toggle',
+          get = function() return addon.db.profile.Guardianspirit end,
+          set = function(v) addon.db.profile.Guardianspirit = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }		  
+        },	
 	  }, }, -- end extra events    
      slacks = {
       name = L["Slacks"],
@@ -1436,11 +1454,26 @@ local playersrcmask = bit.bor(bit.bor(COMBATLOG_OBJECT_TYPE_PLAYER,
                               COMBATLOG_OBJECT_TYPE_PET),
                               COMBATLOG_OBJECT_TYPE_GUARDIAN) -- totems
 
-function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname, srcflags, dstGUID, dstname, dstflags, spellID, spellname, spellschool, extraspellID, extraspellname, extraspellschool, auratype)  
+function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname, srcflags, dstGUID, dstname, dstflags, spellID, spellname, spellschool, extraspellID, extraspellname, extraspellschool, auratype, ...)  
+  
+  local Arcanesignslack = {}
+  local Arcanesignslack2 = {}
+  local max = -math.huge
+    for i,v in ipairs(Arcanesignslack) do
+    Arcanesignslack2[v] = (Arcanesignslack2[v] or 0 ) +1
+    end
+    for v,k in pairs(Arcanesignslack2) do 
+    max = math.max(max, k)
+        if k >= 1 then
+        sendspam(L["клики зафиксированны"]:format())  
+        end
+    end
+  local HPTANK = 50000
+  
   local is_playersrc = bit.band(srcflags or 0, COMBATLOG_OBJECT_TYPE_PLAYER) > 0
   local is_playerdst = bit.band(dstflags or 0, COMBATLOG_OBJECT_TYPE_PLAYER) > 0
-  local is_hostiledst = bit.band(dstflags or 0, COMBATLOG_OBJECT_REACTION_HOSTILE) > 0  
-  -- print((spellname or "nil")..":"..(spellID or "nil")..":"..(subevent or "nil")..":"..(srcname or "nil")..":"..(dstname or "nil")..":"..(dstGUID or "nil")..":"..(dstflags or "nil")..":".."is_playersrc:"..((is_playersrc and "true") or "false"))
+  local is_hostiledst = bit.band(dstflags or 0, COMBATLOG_OBJECT_REACTION_HOSTILE) > 0 
+  print((spellname or "nil")..":"..(spellID or "nil")..":"..(subevent or "nil")..":"..(srcname or "nil")..":"..(dstname or "nil")..":"..(dstGUID or "nil")..":"..(dstflags or "nil")..":".."is_playersrc:"..((is_playersrc and "true") or "false"))
   if self.db.profile.GroupOnly and 
      bit.band(srcflags, COMBATLOG_OBJECT_AFFILIATION_OUTSIDER) > 0 and
      bit.band(dstflags, COMBATLOG_OBJECT_AFFILIATION_OUTSIDER) > 0 and
@@ -1552,9 +1585,9 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 		sendspam(L["%s taunt FAILED on %s (%s)"]:format(srcname, iconize(dstflags,true)..dstname, missType),addon.db.profile.PolyOut)		
 	elseif self.db.profile.Interrupt and is_playersrc and subevent == "SPELL_INTERRUPT" then
 		if self.db.profile.PolyOut[1] then
-			self:Print(L["%s interrupted %s casting %s"]:format("|cff40ff40"..srcname.."|r", iconize(dstflags,false).."|cffff4040"..dstname.."|r", GetSpellLink(extraspellID)))
+			self:Print(L["%s interrupted casting %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(extraspellID)))
 		end	
-		sendspam(L["%s interrupted %s casting %s"]:format(srcname, iconize(dstflags,true)..dstname, GetSpellLink(extraspellID)),addon.db.profile.PolyOut)
+		sendspam(L["%s interrupted casting %s"]:format(srcname, GetSpellLink(extraspellID)),addon.db.profile.PolyOut)
     elseif self.db.profile.Dispel and is_playersrc and subevent == "SPELL_DISPEL" then
 	    if self.db.profile.PolyOut[1] then
 		    self:Print(L["%s dispelled %s on %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(extraspellID), iconize(dstflags,false).."|cffff4040"..dstname.."|r"),addon.db.profile.PolyOut)
@@ -1658,7 +1691,8 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 	elseif self.db.profile.Arcanesign and is_playersrc and subevent == "SPELL_DAMAGE" and (spellID == 308472) then
 			self:Print(L["%s sign damage %s on %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID), "|cffff4040"..dstname.."|r"))
 	elseif self.db.profile.Megoslack and is_playersrc and (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH") and (spellID == 300061) then
-			self:Print(L["%s pokes the fish"]:format("|cff40ff40"..srcname.."|r"))
+			self:Print(L["%s pokes the fish"]:format("|cff40ff40"..srcname.."|r"))			
+            table.insert(Arcanesignslack, srcname)		
 	elseif self.db.profile.Hysteria and is_playersrc and subevent == "SPELL_CAST_SUCCESS" and (spellID == 49016) then
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s on %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID), "|cffff4040"..dstname.."|r"))
@@ -1712,164 +1746,233 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 	elseif self.db.profile.Theimmutabilityofice and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 48792) then --Незыблемость льда
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
-		end		
+		end
+		if UnitHealthMax(srcname) > HPTANK then
 		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
-
+        end
 	elseif self.db.profile.AntiMagicCarapace and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 48707) then --Антимагический панцирь
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
-		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut) 
+		if UnitHealthMax(srcname) > HPTANK then
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+        end
 	elseif self.db.profile.Vampireblood and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 55233) then --Кровь вампира
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then
 		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+        end
 	elseif self.db.profile.Antimagiczone and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 51052) then --Зона антимагии
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then
 		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+        end
 	elseif self.db.profile.Indestructiblearmor and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 51271) then --Несокрушимая броня
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then
 		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+        end
 --вар
 	elseif self.db.profile.Blinddefense and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 871) then --Глухая оборона
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then
 		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+        end
 	elseif self.db.profile.Nostepback and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 12976) then --Ни шагу назад
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then
 		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+        end
 	elseif self.db.profile.Shieldblock and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 2565) then --Блок щитом
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
-		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)	
+		if UnitHealthMax(srcname) > HPTANK then
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+        end
 --пал
 	elseif self.db.profile.Negation and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 307919) then --Отрицание
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then
 		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+        end
 	elseif self.db.profile.Divineprotection and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 498) then --Божественная защита
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then
 		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+        end
 --дру
 	elseif self.db.profile.Oakleather and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 22812) then --Дубовая кожа
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then
 		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+        end
 	elseif self.db.profile.Survival and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 61336) then --Инстинкт выживания
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then
 		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+        end
 	elseif self.db.profile.Frenzy and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 308079) then --Исступление
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then
 		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+        end
 --тринкеты
 	elseif self.db.profile.FangofSindragosa and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 71638) then --Безупречный клык Синдрагосы
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then
 		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+        end
 	elseif self.db.profile.Symbioteworm and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 300133) then --Червь-симбионт
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then
 		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+        end
 --дк
 	elseif self.db.profile.Theimmutabilityofice and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 48792) then --Незыблемость льда
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+        if UnitHealthMax(srcname) > HPTANK then		
 		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+		end
 	elseif self.db.profile.AntiMagicCarapace and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 48707) then --Антимагический панцирь
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then		
 		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+		end
 	elseif self.db.profile.Vampireblood and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 55233) then --Кровь вампира
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then		
 		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+		end
 	elseif self.db.profile.Antimagiczone and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 51052) then --Зона антимагии
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then		
 		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+		end
 	elseif self.db.profile.Indestructiblearmor and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 51271) then --Несокрушимая броня
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then		
 		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+		end
 --вар
 	elseif self.db.profile.Blinddefense and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 871) then --Глухая оборона
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then		
 		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+		end
 	elseif self.db.profile.Nostepback and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 12976) then --Ни шагу назад
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then		
 		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+		end
 	elseif self.db.profile.Shieldblock and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 2565) then --Блок щитом
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then		
 		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+		end
 --пал
 	elseif self.db.profile.Negation and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 307919) then --Отрицание
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then		
 		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+		end
 	elseif self.db.profile.Divineprotection and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 498) then --Божественная защита
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then		
 		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+		end
 --дру
 	elseif self.db.profile.Oakleather and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 22812) then --Дубовая кожа
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then		
 		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+		end
 	elseif self.db.profile.Survival and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 61336) then --Инстинкт выживания
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then		
 		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+		end
 	elseif self.db.profile.Frenzy and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 308079) then --Исступление
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then		
 		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+		end
 --тринкеты
 	elseif self.db.profile.FangofSindragosa and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 71638) then --Безупречный клык Синдрагосы
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then		
 		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
+		end
 	elseif self.db.profile.Symbioteworm and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 300133) then --Червь-симбионт
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end		
+		if UnitHealthMax(srcname) > HPTANK then		
 		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)
-  end
+		end
+	elseif self.db.profile.Guardianspirit and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 47788) then --оберегающий дух (ангелок)
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+	elseif self.db.profile.GuardianspiritRemoved and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 47788) then --оберегающий дух (ангелок)
+		if self.db.profile.PolyOut[1] then
+			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+		end		
+		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)	    		
+  end 
 end
 
 --[[
@@ -1896,4 +1999,26 @@ end
 
 --print(s .. " передал знак на " .. max .. " игроков.")
 print(s)
+]]
+
+--[[
+local Arcanesignslack = {}
+table.insert(Arcanesignslack, srcname)  -- unit.name ???
+
+local Arcanesignslack2 = {}
+local Arcanesignslack3 = {}
+
+for i,v in ipairs(Arcanesignslack) do
+Arcanesignslack2[v] = (Arcanesignslack2[v] or 0 ) +1
+end
+
+local max = -math.huge
+for v,k in pairs(Arcanesignslack2) do 
+--table.sort(Arcanesignslack2)
+max = math.max(max, k)
+-- k - ник, v - число 
+if k >= 4 then
+print(k .. " : " ..  v)          
+end
+end
 ]]
