@@ -1465,7 +1465,7 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
     for v,k in pairs(Arcanesignslack2) do 
     max = math.max(max, k)
         if k >= 1 then
-        sendspam(L["клики зафиксированны"]:format())  
+        sendspam(L["зафиксированно"]:format())  
         end
     end
   local HPTANK = 50000
@@ -1975,9 +1975,9 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
   end 
 end
 
-function addon:PLAYER_()
+-- function addon:PLAYER_()
 
-end
+-- end
 
 
 --[[
