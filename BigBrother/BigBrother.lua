@@ -146,6 +146,7 @@ addon:RegisterDefaults("profile", {
   Symbioteworm = false,
   Guardianspirit = false,
   GuardianspiritRemoved = false,
+  Toyrailroad = false,
 })
 
 -- ACE options menu
@@ -669,7 +670,15 @@ local options = {
           get = function() return addon.db.profile.Shackleseal end,
           set = function(v) addon.db.profile.Shackleseal = v end,
           map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }		  
-        },		
+        },
+        toyrailroad = {
+          name  = L["Toyrailroad"],
+          desc = L["Reports when a player using Toy railroad."],
+          type = 'toggle',
+          get = function() return addon.db.profile.Toyrailroad end,
+          set = function(v) addon.db.profile.Toyrailroad = v end,
+          map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }		  
+        },				
  	  }, }, -- end events
        eventsoutput = {
           name = L["Events Output"],
@@ -1964,14 +1973,14 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 		end
 	elseif self.db.profile.Guardianspirit and is_playersrc and subevent == "SPELL_AURA_APPLIED" and (spellID == 47788) then --оберегающий дух (ангелок)
 		if self.db.profile.PolyOut[1] then
-			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+			self:Print(L["%s cast %s on %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID), "|cffff4040"..dstname.."|r"))
 		end		
-		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
+		sendspam(L["%s cast %s on %s"]:format(srcname, GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)	
 	elseif self.db.profile.GuardianspiritRemoved and is_playersrc and subevent == "SPELL_AURA_REMOVED" and (spellID == 47788) then --оберегающий дух (ангелок)
 		if self.db.profile.PolyOut[1] then
-			self:Print(L["%s cast %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
+			self:Print(L["%s falls off %s"]:format(GetSpellLink(spellID), "|cff40ff40"..dstname.."|r"))
 		end		
-		sendspam(L["%s cast %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)	    		
+		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)	
   end 
 end
 
