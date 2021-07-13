@@ -118,7 +118,7 @@ addon:RegisterDefaults("profile", {
   Arcanesign = false,
   Auramaster = false,
   Stolen = false,
-  Megoslack = false,
+  Megoslack = true,
   Shackleseal = false,
   Hysteria = false,
   Divinehymn = false,
@@ -657,7 +657,7 @@ local options = {
         },	
         megoslack = {
           name  = L["Megoslack"],
-          desc = L["Reports when a player using Sylvanas' mourners."],
+          desc = L["Reports when a player makes more than 8 clicks on the fish."],
           type = 'toggle',
           get = function() return addon.db.profile.Megoslack end,
           set = function(v) addon.db.profile.Megoslack = v end,
@@ -1463,20 +1463,15 @@ local playersrcmask = bit.bor(bit.bor(COMBATLOG_OBJECT_TYPE_PLAYER,
                               COMBATLOG_OBJECT_TYPE_PET),
                               COMBATLOG_OBJECT_TYPE_GUARDIAN) -- totems
 
-function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname, srcflags, dstGUID, dstname, dstflags, spellID, spellname, spellschool, extraspellID, extraspellname, extraspellschool, auratype, ...)  
-  
+
   local Arcanesignslack = {}
   local Arcanesignslack2 = {}
-  local max = -math.huge
-    for i,v in ipairs(Arcanesignslack) do
-    Arcanesignslack2[v] = (Arcanesignslack2[v] or 0 ) +1
-    end
-    for v,k in pairs(Arcanesignslack2) do 
-    max = math.max(max, k)
-        if k >= 1 then
-        sendspam(L["зафиксированно"]:format())  
-        end
-    end
+  local Fishs3 = {}
+  local t = 0
+  local fisht = 0
+
+function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname, srcflags, dstGUID, dstname, dstflags, spellID, spellname, spellschool, extraspellID, extraspellname, extraspellschool, auratype, ...)  
+  
   local HPTANK = 50000
   
   local is_playersrc = bit.band(srcflags or 0, COMBATLOG_OBJECT_TYPE_PLAYER) > 0
@@ -1645,7 +1640,9 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 	elseif self.db.profile.Fish and is_playersrc and subevent == "SPELL_CREATE" and (spellID == 300059) then
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s set %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
-		end		
+		end	
+        fisht = timestamp		
+		--print(timestamp)
 		sendspam(L["%s set %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
 	elseif self.db.profile.Mail and is_playersrc and subevent == "SPELL_CREATE" and (spellID == 54710) then
 		if self.db.profile.PolyOut[1] then
@@ -1700,8 +1697,54 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 	elseif self.db.profile.Arcanesign and is_playersrc and subevent == "SPELL_DAMAGE" and (spellID == 308472) then
 			self:Print(L["%s sign damage %s on %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID), "|cffff4040"..dstname.."|r"))
 	elseif self.db.profile.Megoslack and is_playersrc and (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH") and (spellID == 300061) then
-			self:Print(L["%s pokes the fish"]:format("|cff40ff40"..srcname.."|r"))			
-            table.insert(Arcanesignslack, srcname)		
+	        if self.db.profile.PolyOut[1] then
+			self:Print(L["%s pokes the fish"]:format("|cff40ff40"..srcname.."|r"))	
+			end
+            table.insert(Arcanesignslack, srcname)
+            --print(srcname)
+			for i,v in ipairs(Arcanesignslack) do
+			--print(i,v)
+			if i == 1 then 
+			t = timestamp
+			elseif i > 1 then
+			t = t
+			end
+            Arcanesignslack2[v] = (Arcanesignslack2[v] or 0 ) +1
+			Arcanesignslack = {}
+            end
+			local max = -math.huge			
+            for v,k in pairs(Arcanesignslack2) do 
+            max = math.max(max, k)
+			--print(v,k)
+			local n = 45
+            if t - fisht >= n then
+			--print(t .. "  " .. fisht .. " " .. t - fisht)
+			fisht = timestamp
+            -- t = 0
+        	max = 0
+			Arcanesignslack = {}        
+		    Arcanesignslack2 = {}
+			--print("Вариант 1")
+			table.insert(Arcanesignslack, srcname)
+			--if k > 1 then
+			elseif t - fisht <= n then
+			if srcname == v and k > 7 then
+			sendspam(L["%s сделал %s кликов по рыбе"]:format(v, k),addon.db.profile.PolyOut)
+			fisht = timestamp		
+			--print("Вариант 2")
+           -- Fishs3 = Arcanesignslack2
+			--for z,y in pairs(Fishs3) do 
+			--print(z,y)
+			--if y > 7 then
+			--sendspam(L["%s сделал %s кликов по рыбе"]:format(z, y),addon.db.profile.PolyOut)
+			--Arcanesignslack2 = {}
+			--end
+			--end
+			--elseif k < 7 then
+			--end
+			end
+			end
+    end	
 	elseif self.db.profile.Hysteria and is_playersrc and subevent == "SPELL_CAST_SUCCESS" and (spellID == 49016) then
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s on %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID), "|cffff4040"..dstname.."|r"))

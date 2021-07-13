@@ -3,7 +3,7 @@
 ## Notes: Checks Raid Buffs/Flasks/Consumables. Tunable alerts for misdirects, taunts, cc breakage, rez, dispel and interrupt
 ## Notes-ruRU: Проверяет участников рейда на наличие настоев/эликсиров, а также оповещает о сбитии контроля и перенаправлении угрозы.
 ## Author: Адаптация под Sirus - Фалафель
-## Version: 14
+## Version: 14.2
 ## X-Category: Raid
 ## X-Embeds: Ace2, RosterLib, FuBarPlugin-2.0
 ## OptionalDeps: Ace2, RosterLib, FuBarPlugin-2.0, FuBar2Broker
