@@ -1464,8 +1464,8 @@ local playersrcmask = bit.bor(bit.bor(COMBATLOG_OBJECT_TYPE_PLAYER,
                               COMBATLOG_OBJECT_TYPE_GUARDIAN) -- totems
 
 
-  local Arcanesignslack = {}
-  local Arcanesignslack2 = {}
+  local Fishs = {}
+  local Fishs2 = {}
   local Fishs3 = {}
   local t = 0
   local fisht = 0
@@ -1700,20 +1700,20 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 	        if self.db.profile.PolyOut[1] then
 			self:Print(L["%s pokes the fish"]:format("|cff40ff40"..srcname.."|r"))	
 			end
-            table.insert(Arcanesignslack, srcname)
+            table.insert(Fishs, srcname)
             --print(srcname)
-			for i,v in ipairs(Arcanesignslack) do
+			for i,v in ipairs(Fishs) do
 			--print(i,v)
 			if i == 1 then 
 			t = timestamp
 			elseif i > 1 then
 			t = t
 			end
-            Arcanesignslack2[v] = (Arcanesignslack2[v] or 0 ) +1
-			Arcanesignslack = {}
+            Fishs2[v] = (Fishs2[v] or 0 ) +1
+			Fishs = {}
             end
 			local max = -math.huge			
-            for v,k in pairs(Arcanesignslack2) do 
+            for v,k in pairs(Fishs2) do 
             max = math.max(max, k)
 			--print(v,k)
 			local n = 45
@@ -1722,22 +1722,22 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 			fisht = timestamp
             -- t = 0
         	max = 0
-			Arcanesignslack = {}        
-		    Arcanesignslack2 = {}
+			Fishs = {}        
+		    Fishs2 = {}
 			--print("Вариант 1")
-			table.insert(Arcanesignslack, srcname)
+			table.insert(Fishs, srcname)
 			--if k > 1 then
 			elseif t - fisht <= n then
 			if srcname == v and k > 7 then
 			sendspam(L["%s сделал %s кликов по рыбе"]:format(v, k),addon.db.profile.PolyOut)
 			fisht = timestamp		
 			--print("Вариант 2")
-           -- Fishs3 = Arcanesignslack2
+           -- Fishs3 = Fishs2
 			--for z,y in pairs(Fishs3) do 
 			--print(z,y)
 			--if y > 7 then
 			--sendspam(L["%s сделал %s кликов по рыбе"]:format(z, y),addon.db.profile.PolyOut)
-			--Arcanesignslack2 = {}
+			--Fishs2 = {}
 			--end
 			--end
 			--elseif k < 7 then
