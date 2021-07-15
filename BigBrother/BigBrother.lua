@@ -1641,8 +1641,6 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s set %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID)))
 		end	
-        fisht = timestamp		
-		--print(timestamp)
 		sendspam(L["%s set %s"]:format(srcname, GetSpellLink(spellID)),addon.db.profile.PolyOut)
 	elseif self.db.profile.Mail and is_playersrc and subevent == "SPELL_CREATE" and (spellID == 54710) then
 		if self.db.profile.PolyOut[1] then
@@ -1696,6 +1694,11 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 		sendspam(L["%s на %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)	
 	elseif self.db.profile.Arcanesign and is_playersrc and subevent == "SPELL_DAMAGE" and (spellID == 308472) then
 			self:Print(L["%s sign damage %s on %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID), "|cffff4040"..dstname.."|r"))
+	elseif self.db.profile.Megoslack and is_playersrc and subevent == "SPELL_CREATE" and (spellID == 300059) then
+        fisht = timestamp
+        Fishs = {}        
+		Fishs2 = {}	
+		--print(timestamp)
 	elseif self.db.profile.Megoslack and is_playersrc and (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH") and (spellID == 300061) then
 	        if self.db.profile.PolyOut[1] then
 			self:Print(L["%s pokes the fish"]:format("|cff40ff40"..srcname.."|r"))	
@@ -1721,7 +1724,6 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 			--print(t .. "  " .. fisht .. " " .. t - fisht)
 			fisht = timestamp
             -- t = 0
-        	max = 0
 			Fishs = {}        
 		    Fishs2 = {}
 			--print("Вариант 1")
