@@ -77,6 +77,11 @@ for i,v in ipairs(vars.SpellData.pokesfish) do
 	table.insert(vars.Pokesfish,  { spellData(v) })
 end
 
+vars.Maslo={}
+for i,v in ipairs(vars.SpellData.masloo) do
+	table.insert(vars.Maslo,  { spellData(v) })
+end
+
 local foodmin = 60 -- minimum food stat level to allow
 local scanfoodcache = {}
 local scantt = CreateFrame("GameTooltip", "BigBrotherScanTooltip", UIParent, "GameTooltipTemplate")
@@ -192,17 +197,19 @@ local BigBrother_BuffTable={
 		name=L["Consumables"],
 		sortFunc=Sort_ByClass,
 		buffs={
-		    {},{},{},{},{},
+		    {},{},{},{},
 			vars.ElixirsBattle,
 			vars.ElixirsGuardian,
 			vars.Flasks,
+			vars.Maslo,			
       		vars.Foodbuffs,	
 		},
 		header={
-		    {},{},{},{},{},
+		    {},{},{},{},
 			{headerColor(L["Battle Elixirs"]),     select(2,spellData(60341))}, 
 			{headerColor(L["Guardian Elixirs"]),   select(2,spellData(60343))}, 
 			{headerColor(L["Flasks"]),           select(2,spellData(67019))}, 
+			{headerColor(L["Maslo"]),     select(2,spellData(317727))}, 
 			{headerColor(L["Foods"]),            select(2,spellData(62349))},
 		}
 	},

@@ -157,3 +157,8 @@ vars.SpellData.aoetauntSpells = {
 vars.SpellData.pokesfish = {
   300061, -- баф при нажатии рыбы (Питье)
 }
+
+vars.SpellData.masloo = {
+  317727, -- Рдд
+  317728, -- Милли
+}

@@ -96,6 +96,7 @@ addon:RegisterDefaults("profile", {
   CheckFlasks = true,
   CheckElixirs = true,
   CheckFood = true,
+  CheckMaslo = true,
   Taunt = false,
   AoeTaunt = false,
   Dispel = false,
@@ -771,7 +772,15 @@ local options = {
               get = function() return addon.db.profile.CheckFood end,
               set = function(v) addon.db.profile.CheckFood = v end,
               map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
-            },	
+            },
+            maslo = {
+              name  = L["Maslo"],
+              desc = L["Maslo"],
+              type = 'toggle',
+              get = function() return addon.db.profile.CheckMaslo end,
+              set = function(v) addon.db.profile.CheckMaslo = v end,
+              map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
+            },				
           },
         },
         ready = {
@@ -1057,8 +1066,9 @@ function addon:ConsumableCheck(Where,Full)
   local MissingFlaskList={}
   local MissingElixirList={}
   local MissingFoodList={}
+  local MissingMasloList={}
 
-  if not (self.db.profile.CheckFlasks or self.db.profile.CheckElixirs or self.db.profile.CheckFood) then
+  if not (self.db.profile.CheckFlasks or self.db.profile.CheckElixirs or self.db.profile.CheckFood or self.db.profile.CheckMaslo) then
     self:Print(L["No checks selected!"])
     return
   end
@@ -1069,6 +1079,7 @@ function addon:ConsumableCheck(Where,Full)
     if self.db.profile.Groups[unit.subgroup] then
       table.insert(MissingFlaskList,unit.name)
       table.insert(MissingFoodList,unit.name)
+	  table.insert(MissingMasloList,unit.name)
     end
   end
   if #MissingFlaskList == 0 then
@@ -1127,6 +1138,15 @@ function addon:ConsumableCheck(Where,Full)
 			local t = self:BuffPlayerList(spellName, MissingFoodList)
 		end
 		self:SendMessageList(L["No Food Buff"], MissingFoodList, Where)
+	end  
+
+	--check for missing oil
+	if self.db.profile.CheckMaslo then
+		for i, v in ipairs(vars.Maslo) do
+			local spellName, spellIcon = unpack(v)
+			local t = self:BuffPlayerList(spellName, MissingMasloList)
+		end
+		self:SendMessageList(L["No oil"], MissingMasloList, Where)
 	end  
 end
 
@@ -1478,12 +1498,10 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
   local is_playerdst = bit.band(dstflags or 0, COMBATLOG_OBJECT_TYPE_PLAYER) > 0
   local is_hostiledst = bit.band(dstflags or 0, COMBATLOG_OBJECT_REACTION_HOSTILE) > 0 
   --print((spellname or "nil")..":"..(spellID or "nil")..":"..(subevent or "nil")..":"..(srcname or "nil")..":"..(dstname or "nil")..":"..(dstGUID or "nil")..":"..(dstflags or "nil")..":".."is_playersrc:"..((is_playersrc and "true") or "false"))
-  if self.db.profile.GroupOnly and 
-     bit.band(srcflags, COMBATLOG_OBJECT_AFFILIATION_OUTSIDER) > 0 and
-     bit.band(dstflags, COMBATLOG_OBJECT_AFFILIATION_OUTSIDER) > 0 and
-     bit.band(srcflags, COMBATLOG_OBJECT_AFFILIATION_RAID) > 0	and  
+    if self.db.profile.GroupOnly and bit.band(srcflags, COMBATLOG_OBJECT_AFFILIATION_OUTSIDER) > 0 and bit.band(dstflags, COMBATLOG_OBJECT_AFFILIATION_OUTSIDER) > 0 and
+     --bit.band(srcflags, COMBATLOG_OBJECT_AFFILIATION_RAID) > 0	and  
      not ccinfo.spellid[dstGUID] then
-     -- print("skipped event from "..(srcname or "nil").." on "..(dstname or "nil"))
+     --print("skipped event from "..(srcname or "nil").." on "..(dstname or "nil"))
     return
 	elseif self.db.profile.PolyBreak and is_playersrc
 	  and (subevent == "SPELL_AURA_BROKEN" or subevent == "SPELL_AURA_BROKEN_SPELL" or subevent == "SPELL_AURA_REMOVED")
@@ -1701,7 +1719,7 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 		--print(timestamp)
 	elseif self.db.profile.Megoslack and is_playersrc and (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH") and (spellID == 300061) then
 	        if self.db.profile.PolyOut[1] then
-			self:Print(L["%s pokes the fish"]:format("|cff40ff40"..srcname.."|r"))	
+			self:Print(L["%s pokes the fish"]:format("|cff40ff40"..srcname.."|r"))
 			end
             table.insert(Fishs, srcname)
             --print(srcname)
@@ -2028,56 +2046,3 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 		sendspam(L["%s falls off %s"]:format(GetSpellLink(spellID), dstname),addon.db.profile.PolyOut)	
   end 
 end
-
--- function addon:PLAYER_()
-
--- end
-
-
---[[
-local Arcanesignslack = {}
-table.insert(Arcanesignslack, srcname)  -- unit.name ???
-
-
-
-local Arcanesignslack = {"Педрокан", "Педрокан", "Педрокан", "Педрокан", "Педрокан", "Fyldonor", "Фалафель", "Педрокан", "Педрокан", "Педрокан", "Педрокан", "Fyldonor", "Фалафель", "Педрокан", "Педрокан", "Педрокан", "Педрокан", "Fyldonor", "Фалафель", "Педрокан", "Педрокан", "Fyldonor",}
-local Arcanesignslack2 = {}
-
-for i,v in ipairs(Arcanesignslack) do
-Arcanesignslack2[v] = (Arcanesignslack2[v] or 0 ) +1    
---print("Знак передали " .. i .. " is " .. v .. ".")
-end
-
-
-local s = ""
-local max = -math.huge
-for k,v in pairs(Arcanesignslack2) do
-max = math.max(max, v)
-s = s .. k .. ":" .. v .. "\n" 
-end
-
---print(s .. " передал знак на " .. max .. " игроков.")
-print(s)
-]]
-
---[[
-local Arcanesignslack = {}
-table.insert(Arcanesignslack, srcname)  -- unit.name ???
-
-local Arcanesignslack2 = {}
-local Arcanesignslack3 = {}
-
-for i,v in ipairs(Arcanesignslack) do
-Arcanesignslack2[v] = (Arcanesignslack2[v] or 0 ) +1
-end
-
-local max = -math.huge
-for v,k in pairs(Arcanesignslack2) do 
---table.sort(Arcanesignslack2)
-max = math.max(max, k)
--- k - ник, v - число 
-if k >= 4 then
-print(k .. " : " ..  v)          
-end
-end
-]]

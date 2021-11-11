@@ -229,6 +229,8 @@ Ld["Reports when when the Guardians pirit is decreasing."] = "Reports when when 
 Ld["Toyrailroad"] = "Toyrailroad"
 Ld["Reports when a player using Toy railroad."] = "Reports when a player using Toy railroad."
 Ld["%s set yyy %s"] = "%s set yyy %s"
+Ld["Maslo"] = "%Oil"
+Ld["No oil"] = "No oil"
 
 if locale == "ruRU" then do end
 La["All Stats"] = "Все статы" 
@@ -451,4 +453,6 @@ La["Reports when a player is in the guardian spirit."] = "Сообщает, ко
 La["Reports when when the Guardians pirit is decreasing."] = "Сообщает, когда спадает Оберегающий дух."
 La["Toyrailroad"] = "Игрушечная железная дорога"
 La["Reports when a player using Toy railroad."] = "Сообщает, когда игрок использует Игрушечную железную дорогу."
+La["Maslo"] = "Масло"
+La["No oil"] = "Нет масла"
 end
