@@ -231,6 +231,8 @@ Ld["Reports when a player using Toy railroad."] = "Reports when a player using T
 Ld["%s set yyy %s"] = "%s set yyy %s"
 Ld["Maslo"] = "%Oil"
 Ld["No oil"] = "No oil"
+Ld["Scale Buff Window"] = "Scale Buff Window"
+Ld["Scale the size of the Buff Window"] = "Scale the size of the Buff Window"
 
 if locale == "ruRU" then do end
 La["All Stats"] = "Все статы" 
@@ -455,4 +457,6 @@ La["Toyrailroad"] = "Игрушечная железная дорога"
 La["Reports when a player using Toy railroad."] = "Сообщает, когда игрок использует Игрушечную железную дорогу."
 La["Maslo"] = "Масло"
 La["No oil"] = "Нет масла"
+La["Scale Buff Window"] = "Размер окна баффов"
+La["Scale the size of the Buff Window"] = "Изменяет размер окна баффов"
 end

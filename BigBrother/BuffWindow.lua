@@ -418,6 +418,8 @@ function BigBrother:ToggleBuffWindow()
 	else
 		self:CreateBuffWindow()
 	end
+	local scale = BigBrother.db.profile.BuffWindowScale or 1
+	BigBrother_BuffWindow:SetScale(scale)
 end
 
 function BigBrother:CreateBuffWindow()

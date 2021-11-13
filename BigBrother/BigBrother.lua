@@ -853,6 +853,22 @@ local options = {
           set = function(v) addon.db.profile.BuffWindowCombatClose = v end,
           map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
         }, 
+       scalebuffwin = {
+          name  = L["Scale Buff Window"],
+          desc = L["Scale the size of the Buff Window"],
+          type = 'range',
+          get = function() return addon.db.profile.BuffWindowScale or 1 end,
+          set = function(v) 
+	    addon.db.profile.BuffWindowScale = v 
+	    if not (BigBrother_BuffWindow and BigBrother_BuffWindow:IsShown()) then
+	       BigBrother:ToggleBuffWindow()
+	    end
+	    BigBrother_BuffWindow:SetScale(v)
+	  end,
+	  min = 0.1,
+	  max = 5,
+	  bigStep = 0.1,
+        },      		
         grouponly = {
           name  = L["Group Members Only"],
           desc = L["Only reports events about players in my party/raid"],
