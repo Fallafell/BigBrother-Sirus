@@ -1912,7 +1912,7 @@ end
 function OpenSlider(self, parent)
 	if not sliderFrame then
 		sliderFrame = CreateFrame("Frame", nil, nil)
-		sliderFrame:SetWidth(100)
+		sliderFrame:SetWidth(110)
 		sliderFrame:SetHeight(170)
 		sliderFrame:SetScale(UIParent:GetScale())
 		sliderFrame:SetBackdrop(tmp(
@@ -2161,9 +2161,9 @@ function OpenSlider(self, parent)
 
 			local min = sliderFrame.parent.sliderMin or 0
 			local max = sliderFrame.parent.sliderMax or 1
-			local step = sliderFrame.parent.sliderStep or (max - min) / 100
+			local step = sliderFrame.parent.sliderStep or (max - min) 
 			if step <= 0 then
-				step = (max - min) / 100
+				step = (max - min) 
 			end
 
 			local value = (1 - slider:GetValue()) * (max - min) + min

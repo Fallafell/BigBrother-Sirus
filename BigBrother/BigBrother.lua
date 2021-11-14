@@ -429,7 +429,18 @@ local options = {
           get = function() return addon.db.profile.Symbioteworm end,
           set = function(v) addon.db.profile.Symbioteworm = v end,
           map = { [false] = "|cffff4040Disabled|r", [true] = "|cff40ff40Enabled|r" }
-        },	   		
+        },
+        hp = {
+          name  = L["test"],
+          desc = L["test"],
+          type = 'range',
+          get = function() return HPTANK or 50000 end,
+          set = function(v) HPTANK = v 
+	  end,
+	  min = 10000,
+	  max = 90000,
+	  bigStep = 2500,
+        },      				
       }, }, -- end events  		  
      removed = {
       name = L["Removed Events"],
@@ -1508,7 +1519,7 @@ local playersrcmask = bit.bor(bit.bor(COMBATLOG_OBJECT_TYPE_PLAYER,
 
 function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname, srcflags, dstGUID, dstname, dstflags, spellID, spellname, spellschool, extraspellID, extraspellname, extraspellschool, auratype, ...)  
   
-  local HPTANK = 50000
+  --local HPTANK = 50000
   
   local is_playersrc = bit.band(srcflags or 0, COMBATLOG_OBJECT_TYPE_PLAYER) > 0
   local is_playerdst = bit.band(dstflags or 0, COMBATLOG_OBJECT_TYPE_PLAYER) > 0
@@ -1763,24 +1774,14 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, srcGUID, srcname
 			--print("Вариант 1")
 			table.insert(Fishs, srcname)
 			--if k > 1 then
-			elseif t - fisht <= n then
-			if srcname == v and k > 7 then
-			sendspam(L["%s сделал %s кликов по рыбе"]:format(v, k),addon.db.profile.PolyOut)
-			fisht = timestamp		
-			--print("Вариант 2")
-           -- Fishs3 = Fishs2
-			--for z,y in pairs(Fishs3) do 
-			--print(z,y)
-			--if y > 7 then
-			--sendspam(L["%s сделал %s кликов по рыбе"]:format(z, y),addon.db.profile.PolyOut)
-			--Fishs2 = {}
-			--end
-			--end
-			--elseif k < 7 then
-			--end
-			end
-			end
-    end	
+        elseif t - fisht <= n then
+          if srcname == v and k > 7 then
+            sendspam(L["%s сделал %s кликов по рыбе"]:format(v, k),addon.db.profile.PolyOut)
+            fisht = timestamp		
+
+          end
+        end
+      end	
 	elseif self.db.profile.Hysteria and is_playersrc and subevent == "SPELL_CAST_SUCCESS" and (spellID == 49016) then
 		if self.db.profile.PolyOut[1] then
 			self:Print(L["%s cast %s on %s"]:format("|cff40ff40"..srcname.."|r", GetSpellLink(spellID), "|cffff4040"..dstname.."|r"))
