@@ -58,6 +58,10 @@ for i = 1, 5 do
 	LegitimateUnits["arena" .. i] = true
 	LegitimateUnits["arena" .. i .. "pet"] = true
 end
+for i = 1, 4 do
+    LegitimateUnits["boss" .. i] = true
+    -- LegitimateUnits["arena" .. i .. "pet"] = true
+end
 setmetatable(LegitimateUnits, {__index=function(self, key)
 	if type(key) ~= "string" then
 		return false
