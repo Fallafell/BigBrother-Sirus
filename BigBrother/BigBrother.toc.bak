@@ -1,6 +1,6 @@
 ## Interface: 30300
 ## Title: Big Brother
-## Version: 14.9
+## Version: 14.91
 ## Notes: Checks Raid Buffs/Flasks/Consumables. Tunable alerts for misdirects, taunts, cc breakage, rez, dispel and interrupt
 ## Notes-ruRU: Проверяет участников рейда на наличие настоев/эликсиров, а также оповещает о сбитии контроля и перенаправлении угрозы.
 ## Author: Адаптация под Sirus - Фалафель, fxpw

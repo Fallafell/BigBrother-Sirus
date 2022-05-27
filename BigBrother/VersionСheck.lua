@@ -41,7 +41,7 @@ do
             local  timenow = argtime
             if message and (message > ver) then 
                 if timenow - spamt >= timeneedtospam then              
-                    print("|cff1784d1".."BigBrother for Sirus".."|r".." (".."|cffff0000"..ver.."|r"..") устарел. Вы можете загрузить последнюю версию (".."|cff00ff00"..message.."|r"..") из ".."|cffffcc00".."https://github.com/Fallafell/BigBrother-Sirus".."|r")
+                    print("|cff1784d1".."BigBrother for Sirus".."|r".." (".."|cffff0000"..ver.."|r"..") устарел. Вы можете загрузить версию новее (".."|cff00ff00"..message.."|r"..") из ".."|cffffcc00".."https://github.com/Fallafell/BigBrother-Sirus".."|r")
                     spamt = time()
                 end
             end

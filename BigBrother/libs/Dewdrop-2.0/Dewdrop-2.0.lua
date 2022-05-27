@@ -2014,7 +2014,7 @@ function OpenSlider(self, parent)
 				end
 				local value = (1 - slider:GetValue()) * (max - min) + min
 				if step > 0 then
-					value = math.floor((value - min) / step + 0.5) * step + min
+					value = math.floor((value - min) / step + 0.5) * step + min --округление числа
 					if value > max then
 						value = max
 					elseif value < min then
@@ -2044,7 +2044,7 @@ function OpenSlider(self, parent)
 				end
 				local value = (1 - slider:GetValue()) * (max - min) + min
 				if step > 0 then
-					value = math.floor((value - min) / step + 0.5) * step + min
+					value = math.floor((value - min) / step + 0.5) * step + min --округление числа
 					if value > max then
 						value = max
 					elseif value < min then
@@ -2052,17 +2052,17 @@ function OpenSlider(self, parent)
 					end
 				end
 				if sliderFrame.parent.sliderIsPercent then
-					sliderFrame.currentText:SetText(string.format("%.0f%%", value * 100))
+					sliderFrame.currentText:SetText(value)
 				else
 					if step < 0.1 then
-						sliderFrame.currentText:SetText(string.format("%.2f", value))
+						sliderFrame.currentText:SetText(value)
 					elseif step < 1 then
-						sliderFrame.currentText:SetText(string.format("%.1f", value))
+						sliderFrame.currentText:SetText(value)
 					else
-						sliderFrame.currentText:SetText(string.format("%.0f", value))
+						sliderFrame.currentText:SetText(value)
 					end
 				end
-			end
+			end	
 		end)
 		local function onEnter()
 			StopCounting(self, sliderFrame.level)
@@ -2123,12 +2123,12 @@ function OpenSlider(self, parent)
 			end
 			if inside then
 				showGameTooltip(sliderFrame.parent)
-			end
+			end		
 		end)
 		slider:SetScript("OnEnter", function()
 			inside = true
 			StopCounting(self, sliderFrame.level)
-			showGameTooltip(sliderFrame.parent)
+			showGameTooltip(sliderFrame.parent)		
 		end)
 		slider:SetScript("OnLeave", function()
 			inside = false
@@ -2256,14 +2256,14 @@ function OpenSlider(self, parent)
 	if type(text) == "number" or type(text) == "string" then
 		sliderFrame.currentText:SetText(text)
 	elseif parent.sliderIsPercent then
-		sliderFrame.currentText:SetText(string.format("%.0f%%", parent.sliderValue * 100))
+		sliderFrame.currentText:SetText(parent.sliderValue)
 	else
-		if parent.sliderStep < 0.1 then
-			sliderFrame.currentText:SetText(string.format("%.2f", parent.sliderValue))
-		elseif parent.sliderStep < 1 then
-			sliderFrame.currentText:SetText(string.format("%.1f", parent.sliderValue))
+		if parent.sliderStep > 0.1 then
+			sliderFrame.currentText:SetText(parent.sliderValue) --та самая строчка да
+		elseif parent.sliderStep < 0.1 then
+			sliderFrame.currentText:SetText(parent.sliderValue)
 		else
-			sliderFrame.currentText:SetText(string.format("%.0f", parent.sliderValue))
+			sliderFrame.currentText:SetText(parent.sliderValue)
 		end
 	end
 
@@ -3199,8 +3199,8 @@ function Dewdrop:AddLine(...)
 				button.sliderBigStep = button.sliderStep
 			end
 			button.sliderIsPercent = info.sliderIsPercent and true or false
-			button.sliderMinText = info.sliderMinText or button.sliderIsPercent and string.format("%.0f%%", button.sliderMin * 100) or button.sliderMin
-			button.sliderMaxText = info.sliderMaxText or button.sliderIsPercent and string.format("%.0f%%", button.sliderMax * 100) or button.sliderMax
+			button.sliderMinText = info.sliderMinText or button.sliderIsPercent and button.sliderMin or button.sliderMin
+			button.sliderMaxText = info.sliderMaxText or button.sliderIsPercent and button.sliderMax or button.sliderMax
 			button.sliderFunc = info.sliderFunc
 			button.sliderValue = info.sliderValue
 			button.fromAceOptions = info.fromAceOptions
